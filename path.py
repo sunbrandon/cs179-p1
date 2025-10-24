@@ -1,5 +1,7 @@
 import math
 import random
+import time
+import threading
 
 def read_locations(filename):
     locations = []
@@ -16,24 +18,35 @@ def read_locations(filename):
     
     return locations
 
-def strawman(locations):
+def strawman(locations, bestSoFar):
     distance = 0
     landingPad = locations[0]
 
     for i in range(len(locations)-1):
         distance += computeEuclideanDistance(locations[i],locations[i+1])
+        if distance >= bestSoFar:
+            return float('inf')
 
     #for last loc
     distance += computeEuclideanDistance(locations[-1],landingPad)
+    if distance >= bestSoFar:
+        return float('inf')
+
     return distance
 
 def strawmanAnytime(locations, bestSoFar):
-    while (1): #fix to abandon on enter
+    start_time = time.time()
+
+    while True: #fix to abandon on enter
+
+        if time.time() - start_time > 300:
+            return bestSoFar
+
         random.shuffle(locations)
-        distance = strawman(locations)
+        distance = strawman(locations, bestSoFar)
         if (distance < bestSoFar):
             bestSoFar = distance
-            print(bestSoFar)
+            print(f"{bestSoFar:.1f}")
 
 
 def computeEuclideanDistance(coord1, coord2):
@@ -58,8 +71,8 @@ def main():
     print(f"There are {n} nodes, computing route...")
     print("Shortest Route Discovered So Far")
 
-    bestSoFar = strawman(locations)
-    print(bestSoFar)
+    bestSoFar = strawman(locations, float('inf'))
+    print(f"{bestSoFar:.1f}")
     strawmanAnytime(locations, bestSoFar)
 
     
