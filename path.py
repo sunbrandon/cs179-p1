@@ -1,3 +1,5 @@
+import math
+
 def read_locations(filename):
     locations = []
 
@@ -12,6 +14,20 @@ def read_locations(filename):
                     locations.append((x, y))
     
     return locations
+
+def strawman(locations):
+    distance = 0
+    landingPad = locations[0]
+
+    for i in range(len(locations)-1):
+        distance += computeEuclideanDistance(locations[i],locations[i+1])
+
+    #for last loc
+    distance += computeEuclideanDistance(locations[-1],landingPad)
+    return distance
+
+def computeEuclideanDistance(coord1, coord2):
+    return math.sqrt(((coord2[0]-coord1[0])**2) + ((coord2[1]-coord1[1])**2))
 
 def main():
     print("ComputeDronePath")
@@ -30,7 +46,10 @@ def main():
     
     n = len(locations)
     print(f"There are {n} nodes, computing route...")
-    print()
+    print("Shortest Route Discovered So Far")
+
+    bestSoFar = strawman(locations)
+    print(bestSoFar)
     
 if __name__ == "__main__":
     main()
