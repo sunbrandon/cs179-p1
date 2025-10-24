@@ -1,4 +1,5 @@
 import math
+import random
 
 def read_locations(filename):
     locations = []
@@ -26,6 +27,15 @@ def strawman(locations):
     distance += computeEuclideanDistance(locations[-1],landingPad)
     return distance
 
+def strawmanAnytime(locations, bestSoFar):
+    while (1): #fix to abandon on enter
+        random.shuffle(locations)
+        distance = strawman(locations)
+        if (distance < bestSoFar):
+            bestSoFar = distance
+            print(bestSoFar)
+
+
 def computeEuclideanDistance(coord1, coord2):
     return math.sqrt(((coord2[0]-coord1[0])**2) + ((coord2[1]-coord1[1])**2))
 
@@ -50,6 +60,8 @@ def main():
 
     bestSoFar = strawman(locations)
     print(bestSoFar)
+    strawmanAnytime(locations, bestSoFar)
+
     
 if __name__ == "__main__":
     main()
