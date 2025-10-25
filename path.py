@@ -77,18 +77,40 @@ def nearest_neighbor(locations, start):
     current = start
 
     while len(unvisited) > 0:
-        closest = unvisited[0]
-        min_dist = computeEuclideanDistance(locations[current], locations[closest])
-        for point in unvisited:
-            dist = computeEuclideanDistance(locations[current], locations[point])
-            if dist < min_dist:
-                min_dist = dist
-                closest = point
+        if len(unvisited) == 1:
+            closest = unvisited[0]
+        else:
+            distances = []
+            for point in unvisited:
+                dist = computeEuclideanDistance(locations[current], locations[point])
+                distances.append((dist, point))
+            distances.sort()
+            
+            if random.random() < 0.1:
+                closest = distances[1][1]
+            else:
+                closest = distances[0][1]
+        
         tour.append(closest)
         unvisited.remove(closest)
         current = closest
 
     return tour, total_tour_distance(locations, tour)
+
+def write_solution(locations, tour, distance, prefix):
+    output_filename = f"{prefix}_FormosaSolutions_solution_{int(round(distance))}.txt"
+    
+    with open(output_filename, 'w') as file:
+        for index in tour:
+            x, y = locations[index]
+            file.write(f"{x} {y}")
+            file.write("\n")
+        
+        start_x, start_y = locations[0]
+        file.write(f"{start_x} {start_y}")
+    
+    print(f"Route written to disk as {output_filename}")
+    return output_filename
 
 def main():
     print("ComputeDronePath")
@@ -118,8 +140,13 @@ def main():
     best_distance = bestSoFar
     best_tour = None
 
+    start_time = time.time()
+
     while not stop_flag:
-        start = random.randint(0, len(locations) - 1)
+        if time.time() - start_time > 1: # adjustable timeout for testing
+            break
+        # start = random.randint(0, len(locations) - 1)
+        start = 0
         tour, dist = nearest_neighbor(locations, start)
 
         if dist < best_distance:
@@ -131,6 +158,9 @@ def main():
     # print(nn)
     # enn = eamonn_nearest_neighbor(locations)
     # print(enn)
+
+    prefix = filename.split('.')[0]
+    write_solution(locations, best_tour, best_distance, prefix)
 
     
 if __name__ == "__main__":
