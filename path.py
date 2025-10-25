@@ -140,7 +140,11 @@ def main():
     best_distance = bestSoFar
     best_tour = None
 
+    start_time = time.time()
+
     while not stop_flag:
+        if time.time() - start_time > 1: # adjustable timeout for testing
+            break
         # start = random.randint(0, len(locations) - 1)
         start = 0
         tour, dist = nearest_neighbor(locations, start)
