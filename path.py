@@ -61,6 +61,35 @@ def strawmanAnytime(locations, bestSoFar):
 def computeEuclideanDistance(coord1, coord2):
     return math.sqrt(((coord2[0]-coord1[0])**2) + ((coord2[1]-coord1[1])**2))
 
+def total_tour_distance(locations, tour):
+    total = 0
+    for i in range(len(tour)):
+        current = locations[tour[i]]
+        next_point = locations[tour[(i + 1) % len(tour)]]
+        total += computeEuclideanDistance(current, next_point)
+    return total
+
+def nearest_neighbor(locations, start):
+    n = len(locations)
+    unvisited = list(range(n))
+    unvisited.remove(start)
+    tour = [start]
+    current = start
+
+    while len(unvisited) > 0:
+        closest = unvisited[0]
+        min_dist = computeEuclideanDistance(locations[current], locations[closest])
+        for point in unvisited:
+            dist = computeEuclideanDistance(locations[current], locations[point])
+            if dist < min_dist:
+                min_dist = dist
+                closest = point
+        tour.append(closest)
+        unvisited.remove(closest)
+        current = closest
+
+    return tour, total_tour_distance(locations, tour)
+
 def main():
     print("ComputeDronePath")
     print()
@@ -84,7 +113,24 @@ def main():
 
     bestSoFar = strawman(locations, float('inf'))
     print(f"{bestSoFar:.1f}")
-    strawmanAnytime(locations, bestSoFar)
+    # strawmanAnytime(locations, bestSoFar)
+
+    best_distance = bestSoFar
+    best_tour = None
+
+    while not stop_flag:
+        start = random.randint(0, len(locations) - 1)
+        tour, dist = nearest_neighbor(locations, start)
+
+        if dist < best_distance:
+            best_distance = dist
+            best_tour = tour
+            print(f"{best_distance:.1f}")
+
+    # nn = nearest_neighbor(locations)
+    # print(nn)
+    # enn = eamonn_nearest_neighbor(locations)
+    # print(enn)
 
     
 if __name__ == "__main__":
