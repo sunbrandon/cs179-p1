@@ -3,6 +3,14 @@ import random
 import time
 import threading
 
+stop_flag = False
+
+# Abandon on Enter from user input
+def wait_for_enter():
+    global stop_flag
+    input() # waits for Enter
+    stop_flag = True
+
 def read_locations(filename):
     locations = []
 
@@ -35,19 +43,20 @@ def strawman(locations, bestSoFar):
     return distance
 
 def strawmanAnytime(locations, bestSoFar):
+    global stop_flag
     start_time = time.time()
 
-    while True: #fix to abandon on enter
-
+    while not stop_flag:
         if time.time() - start_time > 300:
-            return bestSoFar
+            break
 
         random.shuffle(locations)
         distance = strawman(locations, bestSoFar)
-        if (distance < bestSoFar):
+        if distance < bestSoFar:
             bestSoFar = distance
             print(f"{bestSoFar:.1f}")
 
+    return bestSoFar
 
 def computeEuclideanDistance(coord1, coord2):
     return math.sqrt(((coord2[0]-coord1[0])**2) + ((coord2[1]-coord1[1])**2))
@@ -70,6 +79,8 @@ def main():
     n = len(locations)
     print(f"There are {n} nodes, computing route...")
     print("Shortest Route Discovered So Far")
+
+    threading.Thread(target=wait_for_enter, daemon=True).start()
 
     bestSoFar = strawman(locations, float('inf'))
     print(f"{bestSoFar:.1f}")
