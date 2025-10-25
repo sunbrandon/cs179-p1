@@ -77,13 +77,20 @@ def nearest_neighbor(locations, start):
     current = start
 
     while len(unvisited) > 0:
-        closest = unvisited[0]
-        min_dist = computeEuclideanDistance(locations[current], locations[closest])
-        for point in unvisited:
-            dist = computeEuclideanDistance(locations[current], locations[point])
-            if dist < min_dist:
-                min_dist = dist
-                closest = point
+        if len(unvisited) == 1:
+            closest = unvisited[0]
+        else:
+            distances = []
+            for point in unvisited:
+                dist = computeEuclideanDistance(locations[current], locations[point])
+                distances.append((dist, point))
+            distances.sort()
+            
+            if random.random() < 0.1:
+                closest = distances[1][1]
+            else:
+                closest = distances[0][1]
+        
         tour.append(closest)
         unvisited.remove(closest)
         current = closest
@@ -134,7 +141,8 @@ def main():
     best_tour = None
 
     while not stop_flag:
-        start = random.randint(0, len(locations) - 1)
+        # start = random.randint(0, len(locations) - 1)
+        start = 0
         tour, dist = nearest_neighbor(locations, start)
 
         if dist < best_distance:
