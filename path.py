@@ -2,6 +2,7 @@ import math
 import random
 import time
 import threading
+import sys
 
 stop_flag = False
 
@@ -14,17 +15,22 @@ def wait_for_enter():
 def read_locations(filename):
     locations = []
 
-    with open(filename, 'r') as file:
-        for line in file:
-            line = line.strip()
-            if line:
-                parts = line.split()
-                if len(parts) == 2:
-                    x = float(parts[0])
-                    y = float(parts[1])
-                    locations.append((x, y))
+    try:
+
+        with open(filename, 'r') as file:
+            for line in file:
+                line = line.strip()
+                if line:
+                    parts = line.split()
+                    if len(parts) == 2:
+                        x = float(parts[0])
+                        y = float(parts[1])
+                        locations.append((x, y))
+        
+        return locations
     
-    return locations
+    except Exception as error: 
+        sys.exit("Aborting......User-entered file does not exist")
 
 def strawman(locations, bestSoFar):
     distance = 0
@@ -117,7 +123,8 @@ def main():
     print()
     
     filename = input("Enter the name of file: ")
-    
+    print()
+
     if not filename:
         print("No filename entered.")
         return
@@ -128,6 +135,13 @@ def main():
         return
     
     n = len(locations)
+
+    if n == 0:
+        sys.exit("Aborting......User-File exists but is empty")
+
+    if n >= 256:
+        sys.exit("Aborting......User-File exists exists but contains 256 coordinates or more")
+    
     print(f"There are {n} nodes, computing route...")
     print("Shortest Route Discovered So Far")
 
@@ -136,6 +150,9 @@ def main():
     bestSoFar = strawman(locations, float('inf'))
     print(f"{bestSoFar:.1f}")
     # strawmanAnytime(locations, bestSoFar)
+
+    if bestSoFar >= 6000:
+        sys.exit("Aborting......Best route found so far is over the 6000 meter distance constraint")
 
     best_distance = bestSoFar
     best_tour = None
