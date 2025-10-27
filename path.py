@@ -77,16 +77,18 @@ def total_tour_distance(locations, tour):
         total += computeEuclideanDistance(current, next_point)
     return total
 
-def nearest_neighbor(locations, start):
+def nearest_neighbor(locations, start, bestSoFar=float('inf')):
     n = len(locations)
     unvisited = list(range(n))
     unvisited.remove(start)
     tour = [start]
     current = start
+    curr_dist = 0
 
     while len(unvisited) > 0:
         if len(unvisited) == 1:
             closest = unvisited[0]
+            dist_to_closest = computeEuclideanDistance(locations[current], locations[closest])
         else:
             distances = []
             for point in unvisited:
@@ -96,14 +98,27 @@ def nearest_neighbor(locations, start):
             
             if random.random() < 0.1:
                 closest = distances[1][1]
+                dist_to_closest = distances[1][0]
             else:
                 closest = distances[0][1]
+                dist_to_closest = distances[0][0]
+        
+        curr_dist += dist_to_closest
+        
+        if curr_dist >= bestSoFar:
+            return None, float('inf')
         
         tour.append(closest)
         unvisited.remove(closest)
         current = closest
 
-    return tour, total_tour_distance(locations, tour)
+    return_dist = computeEuclideanDistance(locations[current], locations[start])
+    curr_dist += return_dist
+    
+    if curr_dist >= bestSoFar:
+        return None, float('inf')
+    
+    return tour, curr_dist
 
 def write_solution(locations, tour, distance, prefix):
     output_filename = f"{prefix}_FormosaSolutions_solution_{int(round(distance))}.txt"
@@ -169,7 +184,7 @@ def main():
             break
         # start = random.randint(0, len(locations) - 1)
         start = 0
-        tour, dist = nearest_neighbor(locations, start)
+        tour, dist = nearest_neighbor(locations, start, best_distance)
 
         if dist < best_distance:
             best_distance = dist
