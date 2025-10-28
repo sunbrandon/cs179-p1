@@ -36,21 +36,21 @@ def read_locations(filename):
 
 def strawman(locations, bestSoFar):
     distance = 0
-    landingPad = locations[0]
+    landing_pad = locations[0]
 
     for i in range(len(locations)-1):
-        distance += computeEuclideanDistance(locations[i],locations[i+1])
+        distance += compute_euclidean_distance(locations[i],locations[i+1])
         if distance >= bestSoFar:
             return float('inf')
 
     #for last loc
-    distance += computeEuclideanDistance(locations[-1],landingPad)
+    distance += compute_euclidean_distance(locations[-1],landing_pad)
     if distance >= bestSoFar:
         return float('inf')
 
     return distance
 
-def strawmanAnytime(locations, bestSoFar):
+def strawman_anytime(locations, bestSoFar):
     global stop_flag
     start_time = time.time()
 
@@ -66,7 +66,7 @@ def strawmanAnytime(locations, bestSoFar):
 
     return bestSoFar
 
-def computeEuclideanDistance(coord1, coord2):
+def compute_euclidean_distance(coord1, coord2):
     return math.sqrt(((coord2[0]-coord1[0])**2) + ((coord2[1]-coord1[1])**2))
 
 def total_tour_distance(locations, tour):
@@ -74,7 +74,7 @@ def total_tour_distance(locations, tour):
     for i in range(len(tour)):
         current = locations[tour[i]]
         next_point = locations[tour[(i + 1) % len(tour)]]
-        total += computeEuclideanDistance(current, next_point)
+        total += compute_euclidean_distance(current, next_point)
     return total
 
 def nearest_neighbor(locations, start, bestSoFar=float('inf')):
@@ -88,11 +88,11 @@ def nearest_neighbor(locations, start, bestSoFar=float('inf')):
     while len(unvisited) > 0:
         if len(unvisited) == 1:
             closest = unvisited[0]
-            dist_to_closest = computeEuclideanDistance(locations[current], locations[closest])
+            dist_to_closest = compute_euclidean_distance(locations[current], locations[closest])
         else:
             distances = []
             for point in unvisited:
-                dist = computeEuclideanDistance(locations[current], locations[point])
+                dist = compute_euclidean_distance(locations[current], locations[point])
                 distances.append((dist, point))
             distances.sort()
             
@@ -112,7 +112,7 @@ def nearest_neighbor(locations, start, bestSoFar=float('inf')):
         unvisited.remove(closest)
         current = closest
 
-    return_dist = computeEuclideanDistance(locations[current], locations[start])
+    return_dist = compute_euclidean_distance(locations[current], locations[start])
     curr_dist += return_dist
     
     if curr_dist >= bestSoFar:
@@ -167,14 +167,13 @@ def main():
 
     threading.Thread(target=wait_for_enter, daemon=True).start()
 
-    bestSoFar = strawman(locations, float('inf'))
-    print(f"{bestSoFar:.1f}")
-    # strawmanAnytime(locations, bestSoFar)
+    best_distance = strawman(locations, float('inf'))
+    print(f"{best_distance:.1f}")
+    # strawman_anytime(locations, best_distance)
 
-    if bestSoFar >= 6000:
-        print(f"Warning: Solution is {bestSoFar:.1f}, greater than the 6000-meter constraint.")
+    if best_distance >= 6000:
+        print(f"Warning: Solution is {best_distance:.1f}, greater than the 6000-meter constraint.")
 
-    best_distance = bestSoFar
     best_tour = None
 
     start_time = time.time()
